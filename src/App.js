@@ -11,7 +11,6 @@ import DiaryList from "./DiaryList";
 
 const App = () => {
   const [data, setData] = useState([]);
-
   const dataId = useRef(0);
 
   const getData = async () => {
@@ -28,6 +27,7 @@ const App = () => {
         id: dataId.current++,
       };
     });
+
     setData(initData);
   };
 
@@ -42,7 +42,7 @@ const App = () => {
       content,
       emotion,
       created_date,
-      id: dataId.data,
+      id: dataId.current,
     };
 
     //dataId의 상태값 1 증가
@@ -52,18 +52,17 @@ const App = () => {
     setData((data) => [newItem, ...data]);
   }, []);
 
-  const onRemove = (targetId) => {
-    const newDiaryList = data.filter((it) => it.id !== targetId);
-    setData(newDiaryList);
-  };
+  const onRemove = useCallback((targetId) => {
+    setData((data) => data.filter((it) => it.id !== targetId));
+  }, []);
 
-  const onEdit = (targetId, newContent) => {
-    setData(
+  const onEdit = useCallback((targetId, newContent) => {
+    setData((data) =>
       data.map((it) =>
         it.id === targetId ? { ...it, content: newContent } : it
       )
     );
-  };
+  }, []);
 
   const getDiaryAnalysis = useMemo(() => {
     const goodCount = data.filter((it) => it.emotion >= 3).length;
